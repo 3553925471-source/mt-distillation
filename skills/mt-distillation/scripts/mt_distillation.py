@@ -361,6 +361,19 @@ def result_text(result, folder):
     )
 
 
+def log_message(message, error=False):
+    """Diagnostics must not abort an imported calculation on a legacy console."""
+    stream = sys.stderr if error else sys.stdout
+    if stream is None:
+        return
+    try:
+        print(message, file=stream, flush=True)
+    except UnicodeEncodeError:
+        encoding = getattr(stream, 'encoding', None) or 'utf-8'
+        safe = message.encode(encoding, errors='backslashreplace').decode(encoding)
+        print(safe, file=stream, flush=True)
+
+
 def calculate_and_save(params, folder, export_origin):
     result = solve(params)
     folder = Path(folder).resolve()
@@ -368,15 +381,15 @@ def calculate_and_save(params, folder, export_origin):
     save_data(result, folder)
     save_matplotlib(result, folder)
     (folder / '计算结果.txt').write_text(result_text(result, folder), encoding='utf-8')
-    print(result_text(result, folder), flush=True)
+    log_message(result_text(result, folder))
     if export_origin:
         try:
             project = save_origin(result, folder)
-            print(f'可编辑 Origin 项目：{project}', flush=True)
+            log_message(f'可编辑 Origin 项目：{project}')
         except Exception as exc:
             message = f'Origin 导出失败：{type(exc).__name__}: {exc}\n普通 MT 图和数据已保存。'
             (folder / 'origin_error.txt').write_text(message, encoding='utf-8')
-            print(message, file=sys.stderr, flush=True)
+            log_message(message, error=True)
             return 3
     return 0
 

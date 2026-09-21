@@ -1,5 +1,7 @@
 """Regression and physical invariants; run with unittest from repository root."""
 import importlib.util
+import io
+from contextlib import redirect_stdout, redirect_stderr
 import json
 import math
 import os
@@ -20,6 +22,18 @@ spec.loader.exec_module(mt)
 
 
 class ModelTests(unittest.TestCase):
+    def test_english_windows_console_does_not_abort_calculation(self):
+        stdout = io.TextIOWrapper(io.BytesIO(), encoding='cp1252')
+        stderr = io.TextIOWrapper(io.BytesIO(), encoding='cp1252')
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory) / 'result'
+            with redirect_stdout(stdout), redirect_stderr(stderr), patch.object(mt, 'save_origin', side_effect=ImportError('Origin unavailable')):
+                self.assertEqual(mt.calculate_and_save(mt.Inputs(), folder, True), 3)
+            result = json.loads((folder / 'results.json').read_text(encoding='utf-8'))
+            self.assertEqual(result['summary']['N_trays_integer'], 10)
+            self.assertIn('塔内理论板数', (folder / '计算结果.txt').read_text(encoding='utf-8'))
+            self.assertTrue((folder / 'origin_error.txt').is_file())
+
     def test_textbook_and_balances(self):
         p = mt.Inputs(**json.loads(EXAMPLE.read_text(encoding='utf-8')))
         r = mt.solve(p)
