@@ -1,0 +1,4 @@
+interface:
+  display_name: "精馏塔 MT 计算"
+  short_description: "逐板计算二元精馏塔理论板数，生成 MT 图与可编辑 Origin 项目"
+  default_prompt: "使用 $mt-distillation 根据我的工况计算塔内理论板数并生成 MT 图。"
