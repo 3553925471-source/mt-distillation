@@ -4,6 +4,16 @@
 
 本仓库同时提供桌面程序和自包含 Agent Skill。Skill 是 AI 的操作说明和可执行资源，需要支持 Skill 且能执行本地命令的客户端；普通网页聊天不能仅通过安装本仓库打开本地窗口。本版本不是某一客户端插件市场的专有插件包。
 
+## 网页版与离线网页版
+
+在线使用：**[MT Distillation 精馏计算器](https://3553925471-source.github.io/mt-distillation/)**。
+
+无需安装 Python 或 Origin，在浏览器中输入工况即可逐板计算并绘制 MT 图。支持手机界面、塔内理论板数（不含再沸器）、最佳进料板、操作线、逐板组成，以及 PNG、SVG、JSON 和 Origin 曲线 CSV 下载。塔板编号位于水平阶梯线下方。
+
+点击页面“下载离线网页版”，保存单个 HTML 文件，之后双击即可离线使用。也可直接下载本仓库 `docs/index.html`。计算全部在浏览器内进行；网页不直接控制本机 Origin。生成可编辑 OPJU 项目仍使用下方的 Python 本地版。
+
+网页算法通过 `tests/test_web_model.py` 与 Python 原版交叉验证（需要 Node.js）；GitHub Pages 发布源为 `main` 分支的 `/docs` 目录。
+
 ## Windows 双击使用
 
 1. 下载 Release 压缩包或 GitHub 的 Code → Download ZIP，完整解压到可写目录。可使用中文、空格路径；不要求 D 盘。不要直接在压缩包内运行。
