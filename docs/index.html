@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="免费的二元精馏逐板计算器：理论塔板数、最佳进料板与 McCabe–Thiele 图。浏览器本地计算，可离线使用。">
+<meta name="theme-color" content="#122938">
+<title>MT Distillation · 精馏塔理论板计算</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23122938'/%3E%3Cpath d='M6 25H13V18H20V11H26' fill='none' stroke='%2350dac1' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+:root{--ink:#122938;--muted:#5b6d79;--teal:#087d73;--line:#dce5ea;--paper:#fff;--bg:#f0f4f7;--accent:#be522e;--danger:#ac263a;--soft:#e9f6f3;color-scheme:light;font-family:Inter,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;font-size:16px;color:var(--ink);background:var(--bg)}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,a,input,select,summary{outline-offset:4px}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}a{color:var(--teal);text-underline-offset:4px}button{border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);padding:9px 13px;font-size:.875rem;font-weight:600}button:hover:not(:disabled){background:#f1f8f7;border-color:#96b9b4}button.primary{background:var(--teal);border-color:var(--teal);color:white;padding:13px;width:100%;font-size:1rem}button.primary:hover{background:#05665f}header{background:var(--ink);color:white}.top{max-width:1440px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:23px 32px}.brand{display:flex;gap:14px;align-items:center}.logo{width:38px;height:38px;border:1px solid #49616e;border-radius:9px;display:grid;place-items:center}.brand strong{font-size:1.1rem;letter-spacing:.035em}.brand small{display:block;color:#b7c9d4;font-size:.8rem;margin-top:3px}.top nav{display:flex;gap:22px;align-items:center}.top a{color:#d5e3eb;font-size:.875rem;text-decoration:none}.top a:hover{color:white;text-decoration:underline}.local{font-size:.8rem;color:#8bdbc9;border-left:1px solid #49616e;padding-left:20px}main{max-width:1440px;margin:auto;padding:28px 32px 40px}.intro{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px;gap:20px}h1{font-size:1.65rem;letter-spacing:-.03em;margin:0 0 7px}p{line-height:1.7}.intro p{margin:0;color:var(--muted);font-size:.9rem}.edition{color:var(--muted);font-size:.8rem;white-space:nowrap}.workspace{display:grid;grid-template-columns:302px minmax(0,1fr);gap:22px;align-items:start}.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 16px #12293804}.inputs{padding:22px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:22px}.section-head h2{margin:0;font-size:1.05rem}.eyebrow{font-size:.75rem;letter-spacing:.10em;color:var(--muted)}.example{padding:6px 9px;font-size:.8rem}.field{margin:0 0 17px}.field label{display:flex;justify-content:space-between;align-items:center;font-size:.875rem;font-weight:600;margin-bottom:7px}.symbol{font:italic 1rem Georgia,serif;color:var(--muted)}.field input{width:100%;border:1px solid #c9d6df;border-radius:6px;padding:10px 12px;min-height:43px;font-variant-numeric:tabular-nums;color:var(--ink);background:#fcfdfe}.field input:focus{border-color:var(--teal)}.field small{display:block;color:var(--muted);font-size:.75rem;line-height:1.5;margin-top:5px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field .unit{font-size:.72rem;font-weight:400}.hint{font-size:.8rem;color:var(--muted);line-height:1.65;margin:14px 0 0}.input-footer{border-top:1px solid var(--line);margin-top:20px;padding-top:15px}.input-footer a{font-size:.8rem}.result-area{min-width:0}.metrics{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin-bottom:16px}.metric{padding:18px 20px;border:1px solid var(--line);border-radius:10px;background:white}.metric.feature{background:var(--ink);color:white;border-color:var(--ink)}.metric .label{font-size:.8rem;color:var(--muted)}.metric.feature .label{color:#b8ced8}.metric .value{font-size:2rem;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.035em;margin-top:6px}.metric .unit{font-size:.8rem;font-weight:400;margin-left:6px;letter-spacing:0}.metric .sub{font-size:.75rem;color:var(--muted);margin-top:5px}.metric.feature .sub{color:#8cdfca}.status{padding:10px 14px;border-radius:7px;margin-bottom:16px;font-size:.85rem;background:var(--soft);color:#175e52;line-height:1.6}.status[data-kind="error"]{background:#fff0f2;color:var(--danger)}.status[data-kind="stale"]{background:#fff3dd;color:#79570b}.chart-head{padding:20px 22px 0;display:flex;justify-content:space-between;gap:12px;align-items:start}.chart-head h2{font-size:1rem;margin:0 0 5px}.chart-head p{font-size:.8rem;color:var(--muted);margin:0}.chart-tools{display:flex;gap:7px}.chart-tools button{padding:6px 9px;font-size:.8rem}.plot{padding:4px 12px 0;max-width:800px;margin:auto;aspect-ratio:1/1}.plot svg{width:100%;height:auto;display:block}.plot.empty{display:grid;place-items:center;color:var(--muted);aspect-ratio:4/3;font-size:.9rem}.legend{display:flex;flex-wrap:wrap;gap:12px 20px;padding:0 24px 20px;font-size:.8rem;color:var(--muted)}.legend span{display:flex;gap:7px;align-items:center}.swatch{width:22px;border-top:3px solid var(--c);height:0}.swatch.dash{border-top-style:dashed}.chart-note{border-top:1px solid var(--line);margin:0;padding:14px 22px;font-size:.8rem;color:var(--muted);line-height:1.6}.details{margin-top:18px;padding:0 22px}.details summary{cursor:pointer;font-weight:600;font-size:.95rem;padding:18px 0;display:list-item;list-style-position:inside}.detail-body{padding-bottom:20px}.equations{display:grid;grid-template-columns:1fr 1fr;gap:12px}.equation{background:#f4f7f9;padding:14px;border-radius:6px;font-size:.875rem}.equation strong{display:block;margin:6px 0;font-family:"Segoe UI",sans-serif;font-weight:600;font-variant-numeric:tabular-nums}.equation small{color:var(--muted)}.parameters{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:.85rem;margin-top:15px;color:var(--muted);font-variant-numeric:tabular-nums}.table-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.table-actions p{font-size:.8rem;color:var(--muted);margin:0}.table-wrap{overflow:auto;max-height:470px;border:1px solid var(--line);border-radius:7px}table{width:100%;border-collapse:collapse;font-size:.85rem;white-space:nowrap}th,td{text-align:right;padding:11px 14px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}th{background:#f2f6f8;position:sticky;top:0;color:var(--muted);font-weight:500}th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}tr.feed{background:#eaf7f3}tr.terminal{color:var(--muted);background:#f8fafb}.exports{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.model p,.model li{font-size:.875rem;line-height:1.8;color:var(--muted)}.model ul{padding-left:22px}.model code{color:var(--ink)}footer{max-width:1440px;margin:auto;padding:0 32px 28px;display:flex;justify-content:space-between;gap:14px;font-size:.75rem;color:var(--muted);line-height:1.7}.noscript{padding:24px;background:#fff0f2;color:var(--danger)}
+@media(min-width:1100px){.inputs{position:sticky;top:20px}}@media(max-width:850px){.workspace{grid-template-columns:1fr}.inputs{position:static}.input-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.pair{display:contents}.inputs .primary{max-width:320px}.input-footer{display:none}.metrics{margin-top:0}.intro{align-items:start}.edition{display:none}.top,main{padding-left:20px;padding-right:20px}.top nav{gap:13px}.local{display:none}}@media(max-width:480px){.top{padding:18px 16px}.brand strong{font-size:.95rem}.brand small{font-size:.7rem}.top nav a{font-size:.8rem}.top nav a:first-child{display:none}main{padding:22px 12px}.intro{padding:0 4px}h1{font-size:1.4rem}.inputs{padding:18px}.metrics{gap:7px;grid-template-columns:1.2fr 1fr 1fr}.metric{padding:13px 10px}.metric .value{font-size:1.5rem}.metric .label,.metric .sub{font-size:.7rem}.metric .unit{font-size:.7rem;margin-left:2px}.chart-head{padding:17px 15px 0;flex-wrap:wrap}.plot{padding:0}.legend{padding:0 15px 16px;gap:9px 15px;font-size:.75rem}.details{padding:0 16px}.equations{grid-template-columns:1fr}footer{padding:0 16px 25px;flex-direction:column}.table-actions{flex-wrap:wrap}}
+@media print{header nav,.inputs,.exports,.chart-tools,.table-actions button,footer{display:none}.workspace{display:block}body{background:white}.panel{box-shadow:none}.details:not([open]){display:none}main{padding:0}.plot{max-width:650px}.status{display:none}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="brand"><div class="logo" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M2 21h7v-7h7V7h6" fill="none" stroke="#50dac1" stroke-width="2.5"/></svg></div><div><strong>MT DISTILLATION</strong><small>二元精馏 · 逐板计算</small></div></div><nav aria-label="相关资源"><a href="#model">模型说明</a><a href="https://github.com/3553925471-source/mt-distillation" target="_blank" rel="noopener noreferrer">GitHub ↗</a><span class="local">工况仅在本机计算</span></nav></div></header>
+<noscript><div class="noscript">此计算器需要启用 JavaScript。也可以从 GitHub 下载 Python 本地版。</div></noscript>
+<main>
+<div class="intro"><div><h1>精馏塔理论板计算器</h1><p>从气液相平衡到逐板组成，用一张 McCabe–Thiele 图查看分离过程。</p></div><span class="edition">WEB 1.0 · 恒定相对挥发度</span></div>
+<div class="workspace">
+<aside class="panel inputs"><div class="section-head"><h2>工况输入</h2><button type="button" id="example" class="example">载入例题 7-15</button></div>
+<form id="input-form"><div class="input-fields">
+<div class="field"><label for="alpha">相对挥发度 <span class="symbol">α</span></label><input id="alpha" name="alpha" type="number" step="any" value="2.16" required></div>
+<div class="field"><label for="zF">原料组成 <span class="symbol">z<sub>F</sub></span></label><input id="zF" name="zF" type="number" step="any" value="0.35" required></div>
+<div class="pair"><div class="field"><label for="xD">塔顶组成 <span class="symbol">x<sub>D</sub></span></label><input id="xD" name="xD" type="number" step="any" value="0.94" required></div><div class="field"><label for="xW">塔底组成 <span class="symbol">x<sub>W</sub></span></label><input id="xW" name="xW" type="number" step="any" value="0.04606060606060603" required></div></div>
+<div class="field"><label for="q">进料热状态 <span class="symbol">q</span></label><input id="q" name="q" type="number" step="any" value="1.05" required><small>q = 1：饱和液体；q = 0：饱和蒸气</small></div>
+<div class="field"><label for="R">实际回流比 <span class="symbol">R</span></label><input id="R" name="R" type="number" step="any" value="2.9122101396307274" required><small>输入实际 R，不是 R / Rmin</small></div>
+<div class="field"><label for="F">进料流量 <span class="unit">kmol/h</span></label><input id="F" name="F" type="number" step="any" value="100" required></div>
+</div><button class="primary" type="submit">计算并绘制 MT 图</button><p class="hint">组成均为轻组分摩尔分数，需满足<br>0 &lt; x<sub>W</sub> &lt; z<sub>F</sub> &lt; x<sub>D</sub> &lt; 1。</p></form>
+<div class="input-footer"><a href="https://github.com/3553925471-source/mt-distillation/releases/latest" target="_blank" rel="noopener noreferrer">需要 Origin 项目？下载本地版 ↗</a></div></aside>
+<section class="result-area" aria-label="计算结果">
+<div class="metrics"><div class="metric feature"><div class="label">塔内理论板数 · 小数估算</div><div class="value"><span id="fractional">—</span><span class="unit">块</span></div><div class="sub">不含再沸器</div></div><div class="metric"><div class="label">完整理论板数</div><div class="value"><span id="integer">—</span><span class="unit">块</span></div><div class="sub">完整阶梯计数</div></div><div class="metric"><div class="label">进料板位置</div><div class="value"><span id="feed">—</span><span class="unit">号板</span></div><div class="sub">从塔顶第 1 块起</div></div></div>
+<div class="status" id="status" role="status" aria-live="polite">正在计算例题 7-15…</div>
+<div class="panel"><div class="chart-head"><div><h2>McCabe–Thiele 图</h2><p id="chart-subtitle">逐板计算 · 最佳进料位置</p></div><div class="chart-tools"><button type="button" data-export="svg" disabled>SVG</button><button type="button" data-export="png" disabled>PNG ↓</button></div></div><div id="plot" class="plot"></div>
+<div class="legend" aria-label="图例"><span><i class="swatch" style="--c:#087d73"></i>相平衡线</span><span><i class="swatch dash" style="--c:#9aa9b6"></i>对角线</span><span><i class="swatch" style="--c:#526dbe"></i>精馏段</span><span><i class="swatch" style="--c:#8a64a5"></i>提馏段</span><span><i class="swatch dash" style="--c:#ac8426"></i>q 线</span><span><i class="swatch" style="--c:#be522e"></i>理论板阶梯</span></div><p class="chart-note">编号位于水平阶梯线下方；末端再沸器等效阶梯保留绘出但不编号。小数板数采用末级线性插值。</p></div>
+<details class="panel details" open><summary>操作线与物料衡算</summary><div class="detail-body"><div class="equations"><div class="equation">精馏段操作线<strong id="rectifying">—</strong><small>y<sub>n+1</sub> = (L/V) x<sub>n</sub> + D x<sub>D</sub> / V</small></div><div class="equation">提馏段操作线<strong id="stripping">—</strong><small>y<sub>n+1</sub> = (L′/V′) x<sub>n</sub> − W x<sub>W</sub> / V′</small></div></div><div class="parameters" id="parameters"></div></div></details>
+<details class="panel details" id="stage-details"><summary>逐板组成明细 <span id="stage-count"></span></summary><div class="detail-body"><div class="table-actions"><p>同级 x、y 满足相平衡；下一气相 y 由操作线求得。</p><button type="button" data-export="stages" disabled>下载逐板 CSV</button></div><div class="table-wrap"><table><thead><tr><th scope="col">板号</th><th scope="col">塔段</th><th scope="col">液相 x<sub>n</sub></th><th scope="col">气相 y<sub>n</sub></th><th scope="col">下一气相 y<sub>n+1</sub></th></tr></thead><tbody id="stage-body"></tbody></table></div></div></details>
+<div class="exports" aria-label="下载结果"><button type="button" data-export="json" disabled>计算结果 JSON</button><button type="button" data-export="curves" disabled>Origin 曲线 CSV</button><button type="button" id="offline">下载离线网页版</button></div>
+<details class="panel details model" id="model"><summary>模型假设与计数规则</summary><div class="detail-body"><p>适用于恒定相对挥发度、恒摩尔流、全凝器、泡点回流、平衡部分再沸器和单股进料的二元精馏。按操作线交点切换塔段，自动确定本模型约定的最佳进料板。不是多组分、非理想或共沸体系的严格模拟。</p><ul><li>相平衡式：y = αx / [1 + (α − 1)x]。逐板计算交替使用相平衡逆式与对应塔段操作线。</li><li>全凝器不计级；塔内理论板数扣除一个再沸器等效级。实际塔板数还需要板效率资料。</li><li>最后完整阶梯可能越过 x<sub>W</sub>。小数板数使用该水平步的组成线性插值，是图解估算。</li><li>要求 R &gt; Rmin，且满足进料夹点控制的双塔段可行性条件。接近夹点时最多计算 10,000 级。</li><li>例题 7-15：D/F = 0.34，先由衡算求 x<sub>W</sub>；R/Rmin = 1.4，对应实际 R ≈ 2.91221。F = 100 kmol/h 是流量基准。</li><li>网页不调用本机 Origin。曲线 CSV 可导入 Origin；自动生成可编辑 OPJU 请使用 <a href="https://github.com/3553925471-source/mt-distillation/releases/latest" target="_blank" rel="noopener noreferrer">Python 本地版</a>。</li><li>所有计算在当前浏览器内完成，没有工况上传接口。离线文件不依赖外部字体、脚本或图形库。</li></ul></div></details>
+</section></div></main>
+<footer><span>MT Distillation · 开源精馏计算工具</span><span>Python 与网页共用计算约定 · MIT License</span></footer>
+<script id="mt-model">
+'use strict';
+globalThis.MTModel = (() => {
+  const example = {alpha:2.16,zF:.35,xD:.94,xW:(.35-.34*.94)/.66,q:1.05,R:2.9122101396307274,F:100};
+  const yEq=(x,a)=>a*x/(1+(a-1)*x), xEq=(y,a)=>y/(a-(a-1)*y);
+  function operating(p){
+    for(const key of ['alpha','zF','xD','xW','q','R','F','tol']) if(typeof p[key]!=='number'||!Number.isFinite(p[key])) throw Error(`${key} 必须为有限数值。`);
+    if(p.alpha<=1) throw Error('相对挥发度 α 必须大于 1。');
+    if(!(0<p.xW&&p.xW<p.zF&&p.zF<p.xD&&p.xD<1)) throw Error('组成必须满足 0 < xW < zF < xD < 1。');
+    if(p.R<=0||p.F<=0) throw Error('回流比 R 和进料流量 F 必须大于 0。');
+    if(!(0<p.tol&&p.tol<=1e-8)) throw Error('tol 必须位于 (0, 1e-8]。');
+    if(!Number.isInteger(p.max_stages)||p.max_stages<2||p.max_stages>10000) throw Error('网页最多允许计算 10,000 级。');
+    let lo=0,hi=1;
+    for(let i=0;i<100;i++){const mid=(lo+hi)/2; const residual=p.q*mid-(p.q-1)*yEq(mid,p.alpha)-p.zF;if(residual>0)hi=mid;else lo=mid;}
+    const xe=(lo+hi)/2,ye=yEq(xe,p.alpha);
+    if(!(p.xW<xe&&xe<p.xD&&ye<p.xD))throw Error('工况超出进料夹点控制的常规双塔段范围。');
+    const Rmin=(p.xD-ye)/(ye-xe);
+    if(p.R<=Rmin+p.tol*Math.max(1,Rmin))throw Error(`实际回流比 R 必须大于 Rmin = ${Rmin.toFixed(6)}；等于时趋于无穷级，小于时不可行。`);
+    const D=p.F*(p.zF-p.xW)/(p.xD-p.xW),W=p.F-D,L=p.R*D,V=(p.R+1)*D,Ls=L+p.q*p.F,Vs=V-(1-p.q)*p.F;
+    if(Ls<=0||Vs<=0)throw Error('提馏段气液流量必须为正，请检查 q、R 和产品规格。');
+    const mr=L/V,br=D*p.xD/V,ms=Ls/Vs,bs=-W*p.xW/Vs,xI=(bs-br)/(mr-ms),yI=mr*xI+br;
+    if(!(p.xW<xI&&xI<p.xD&&xI<yI&&yI<yEq(xI,p.alpha)))throw Error('操作线交点不处于可行双塔段区域。');
+    const o={D,W,L,V,L_strip:Ls,V_strip:Vs,mr,br,ms,bs,xe,ye,xI,yI,Rmin};
+    if(!Object.values(o).every(Number.isFinite))throw Error('数值超出可计算范围，请检查参数量级。');
+    return o;
+  }
+  function solve(input){
+    const p={...input,max_stages:input.max_stages??10000,tol:input.tol??1e-12};
+    const o=operating(p),stages=[],staircase=[[p.xD,p.xD]];
+    let y=p.xD,previous=p.xD,feed=null,finished=false;
+    for(let n=1;n<=p.max_stages;n++){
+      const x=xEq(y,p.alpha);
+      if(!(0<=x&&x<previous-p.tol))throw Error(`第 ${n} 级无法推进：接近夹点或数值精度不足。`);
+      if(feed===null&&x<=o.xI)feed=n;
+      const section=feed===null?'rectifying':n===feed?'feed':'stripping';
+      staircase.push([x,y]);const terminal=x<=p.xW;
+      const next=terminal?null:feed===null?o.mr*x+o.br:o.ms*x+o.bs;
+      stages.push({stage:n,section,x_previous:previous,x,y,y_next:next,terminal_step:terminal});
+      if(terminal){finished=true;break;}staircase.push([x,next]);previous=x;y=next;
+    }
+    if(!finished)throw Error('超过最大计算级数，工况可能过于接近夹点。');
+    if(feed===null||feed>=stages.length)throw Error('进料落入终端再沸器等效级；当前模型要求进料位于塔内。');
+    const last=stages[stages.length-1],fraction=(last.x_previous-p.xW)/(last.x_previous-last.x),eq=stages.length-1+fraction;
+    const summary={N_equilibrium_integer:stages.length,N_trays_integer:stages.length-1,N_equilibrium_fractional:eq,N_trays_fractional:eq-1,feed_stage_from_top:feed,trays_above_feed:feed-1,trays_below_feed:stages.length-1-feed,terminal_x:last.x,target_xW:p.xW,Nmin_Fenske:Math.log((p.xD/(1-p.xD))*((1-p.xW)/p.xW))/Math.log(p.alpha),count_convention:'Total condenser excluded; one partial reboiler included in equilibrium stages.',terminal_note:'Fractional tray count uses terminal horizontal-step interpolation.'};
+    return {inputs:p,operating:o,summary,stages,staircase};
+  }
+  function series(r){
+    const p=r.inputs,o=r.operating;let lo=-Infinity,hi=Infinity;
+    for(const slope of [p.q-1,p.q])if(slope!==0){const b=[-p.zF/slope,(1-p.zF)/slope].sort((a,b)=>a-b);lo=Math.max(lo,b[0]);hi=Math.min(hi,b[1]);}
+    return [
+      {name:'Equilibrium',color:'#087d73',points:Array.from({length:501},(_,i)=>[i/500,yEq(i/500,p.alpha)])},
+      {name:'Diagonal',color:'#9aa9b6',dash:true,points:[[0,0],[1,1]]},
+      {name:'Rectifying',color:'#526dbe',points:[[o.xI,o.yI],[p.xD,p.xD]]},
+      {name:'Stripping',color:'#8a64a5',points:[[p.xW,p.xW],[o.xI,o.yI]]},
+      {name:'q-line',color:'#ac8426',dash:true,points:[lo,hi].map(t=>[p.zF+(p.q-1)*t,p.zF+p.q*t])},
+      {name:'MT stages',color:'#be522e',points:r.staircase},
+      {name:'Pinch',color:'#087d73',marker:true,points:[[o.xe,o.ye]]},
+      {name:'Intersection',color:'#122938',marker:true,points:[[o.xI,o.yI]]}
+    ];
+  }
+  return {example,yEq,xEq,operating,solve,series};
+})();
+</script>
+<script id="mt-interface">
+'use strict';
+(() => {
+const $=id=>document.getElementById(id),keys=['alpha','zF','xD','xW','q','R','F'];let result=null,valid=false;
+const fmt=(x,n=6)=>Number(x).toFixed(n),escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function status(text,kind='ok'){$('status').textContent=text;$('status').dataset.kind=kind;}
+function enable(on){document.querySelectorAll('[data-export]').forEach(b=>b.disabled=!on);}
+function chart(r){
+ const w=800,h=800,left=78,top=75,size=642,X=x=>left+x*size,Y=y=>top+(1-y)*size,p=r.inputs,s=r.summary;
+ let a=[`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="plot-title plot-desc" style="font-family:Segoe UI,Microsoft YaHei,sans-serif"><title id="plot-title">McCabe–Thiele 图</title><desc id="plot-desc">塔内理论板数 ${fmt(s.N_trays_fractional,4)}，进料板 ${s.feed_stage_from_top}。图中展示相平衡线、操作线、q 线与逐板阶梯。</desc><rect width="800" height="800" fill="white"/><defs><clipPath id="plot-clip"><rect x="${left}" y="${top}" width="${size}" height="${size}"/></clipPath></defs>`];
+ a.push(`<text x="400" y="25" text-anchor="middle" fill="#122938" font-size="17" font-weight="600">N trays = ${fmt(s.N_trays_fractional,4)} · Feed = ${s.feed_stage_from_top}</text><text x="400" y="49" text-anchor="middle" fill="#5b6d79" font-size="13">α=${p.alpha}   R=${fmt(p.R,5)}   q=${p.q}   zF=${p.zF}   xD=${p.xD}   xW=${fmt(p.xW,5)}</text>`);
+ for(let i=0;i<=10;i++){const v=i/10;a.push(`<path d="M${X(v)} ${top}V${top+size} M${left} ${Y(v)}H${left+size}" fill="none" stroke="#e7edf1" stroke-width="1"/><text x="${X(v)}" y="${top+size+25}" text-anchor="middle" font-size="14" fill="#5b6d79">${v.toFixed(1)}</text><text x="${left-14}" y="${Y(v)+5}" text-anchor="end" font-size="14" fill="#5b6d79">${v.toFixed(1)}</text>`);}
+ a.push(`<rect x="${left}" y="${top}" width="${size}" height="${size}" fill="none" stroke="#aabac4"/><g clip-path="url(#plot-clip)">`);
+ for(const line of MTModel.series(r)){
+  if(line.marker){for(const [x,y]of line.points)a.push(`<circle cx="${X(x)}" cy="${Y(y)}" r="4" fill="${line.color}"><title>${line.name}: (${fmt(x)}, ${fmt(y)})</title></circle>`);}
+  else a.push(`<polyline points="${line.points.map(([x,y])=>`${X(x)},${Y(y)}`).join(' ')}" fill="none" stroke="${line.color}" stroke-width="${line.name==='MT stages'?2.6:2}" ${line.dash?'stroke-dasharray="8 7"':''}><title>${line.name}</title></polyline>`);
+ }
+ for(const row of r.stages.slice(0,-1))if(r.stages.length<=35||[1,s.feed_stage_from_top,s.N_trays_integer].includes(row.stage))a.push(`<text x="${X((row.x_previous+row.x)/2)}" y="${Y(row.y)+15}" text-anchor="middle" fill="#86391f" font-size="13" font-weight="${row.stage===s.feed_stage_from_top?'700':'400'}">${row.stage}<title>板 ${row.stage}: x=${fmt(row.x)}, y=${fmt(row.y)}</title></text>`);
+ a.push(`</g><text x="400" y="776" text-anchor="middle" font-size="16" fill="#122938">液相轻组分摩尔分数 x</text><text transform="translate(23 395) rotate(-90)" text-anchor="middle" font-size="16" fill="#122938">气相轻组分摩尔分数 y</text></svg>`);return a.join('');
+}
+function calculate(){
+ try{
+  const p={};for(const key of keys){if($(key).value.trim()==='')throw Error('请完整填写所有工况参数。');p[key]=Number($(key).value);}
+  result=MTModel.solve(p);valid=true;const s=result.summary,o=result.operating;
+  $('fractional').textContent=fmt(s.N_trays_fractional,4);$('integer').textContent=s.N_trays_integer;$('feed').textContent=s.feed_stage_from_top;
+  status(`计算完成 · Rmin = ${fmt(o.Rmin)}，实际 R / Rmin = ${fmt(p.R/o.Rmin,3)}。`);
+  $('plot').className='plot';$('plot').innerHTML=chart(result);
+  $('rectifying').textContent=`y = ${fmt(o.mr)} x + ${fmt(o.br)}`;
+  $('stripping').textContent=`y = ${fmt(o.ms)} x − ${fmt(-o.bs)}`;
+  $('parameters').innerHTML=[`D = ${fmt(o.D,3)} kmol/h`,`W = ${fmt(o.W,3)} kmol/h`,`操作线交点 (${fmt(o.xI,4)}, ${fmt(o.yI,4)})`,`夹点 (${fmt(o.xe,4)}, ${fmt(o.ye,4)})`].map(t=>`<span>${escape(t)}</span>`).join('');
+  const sections={rectifying:'精馏段',feed:'进料板',stripping:'提馏段'};
+  $('stage-body').innerHTML=result.stages.map(row=>`<tr class="${row.terminal_step?'terminal':row.section==='feed'?'feed':''}"><td>${row.terminal_step?'—':row.stage}</td><td>${row.terminal_step?'再沸器等效末级':sections[row.section]}</td><td>${fmt(row.x,7)}</td><td>${fmt(row.y,7)}</td><td>${row.y_next===null?'—':fmt(row.y_next,7)}</td></tr>`).join('');
+  $('stage-count').textContent=`· ${s.N_trays_integer} 块塔内板 + 再沸器等效末级`;enable(true);
+ }catch(err){result=null;valid=false;enable(false);status(err.message,'error');for(const id of ['fractional','integer','feed','rectifying','stripping'])$(id).textContent='—';$('plot').className='plot empty';$('plot').textContent='请调整工况后重新计算';$('parameters').textContent='';$('stage-body').textContent='';$('stage-count').textContent='';}
+}
+function download(content,name,type){const url=URL.createObjectURL(content instanceof Blob?content:new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+function csv(rows){return '\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');}
+async function exportFile(type){
+ if(!valid||!result)return;
+ const timestamp=new Date().toISOString().replace(/[:.]/g,'-'),base=`MT_${timestamp}`;
+ try{
+  if(type==='json')download(JSON.stringify(result,null,2),base+'.json','application/json;charset=utf-8');
+  if(type==='stages'){const fields=Object.keys(result.stages[0]);download(csv([fields,...result.stages.map(row=>fields.map(k=>row[k]))]),base+'_stages.csv','text/csv;charset=utf-8');}
+  if(type==='curves'){
+   const lines=MTModel.series(result),rows=[lines.flatMap(s=>[s.name+' x',s.name+' y'])],max=Math.max(...lines.map(s=>s.points.length));
+   for(let i=0;i<max;i++)rows.push(lines.flatMap(s=>s.points[i]??['','']));
+   download(csv(rows),base+'_origin_curves.csv','text/csv;charset=utf-8');
+  }
+  if(type==='svg')download(chart(result),base+'.svg','image/svg+xml;charset=utf-8');
+  if(type==='png'){
+   const url=URL.createObjectURL(new Blob([chart(result)],{type:'image/svg+xml;charset=utf-8'}));
+   try{const img=new Image();img.src=url;await img.decode();const canvas=document.createElement('canvas');canvas.width=canvas.height=1800;canvas.getContext('2d').drawImage(img,0,0,1800,1800);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('无法生成 PNG');download(blob,base+'.png','image/png');}finally{URL.revokeObjectURL(url);}
+  }
+ }catch(e){status('下载失败：'+e.message,'error');}
+}
+$('input-form').addEventListener('submit',e=>{e.preventDefault();calculate();});
+$('input-form').addEventListener('input',()=>{valid=false;enable(false);status('工况已修改，下方保留上次结果。请点击“计算并绘制 MT 图”更新。','stale');});
+$('example').addEventListener('click',()=>{for(const key of keys)$(key).value=MTModel.example[key];calculate();});
+document.querySelectorAll('[data-export]').forEach(button=>button.addEventListener('click',()=>exportFile(button.dataset.export)));
+$('offline').addEventListener('click',()=>{
+ const clone=document.documentElement.cloneNode(true);
+ clone.querySelectorAll('input').forEach(el=>el.setAttribute('value',$(el.id).value));
+ clone.querySelector('#plot').innerHTML='';clone.querySelector('#stage-body').innerHTML='';
+ download('<!doctype html>\n'+clone.outerHTML,'MT_Distillation_离线网页版.html','text/html;charset=utf-8');
+});
+calculate();
+// Optional browser-native agent interface; ordinary browsers need no extension.
+if(document.modelContext?.registerTool){
+ const lifecycle=new AbortController();
+ try{Promise.resolve(document.modelContext.registerTool({name:'calculate_distillation',title:'计算精馏塔理论板数',description:'Validate a binary distillation case, calculate theoretical tower trays excluding reboiler, and update the visible MT diagram.',inputSchema:{type:'object',properties:Object.fromEntries(keys.map(key=>[key,{type:'number'}])),required:keys,additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(input){const checked=MTModel.solve(input);for(const key of keys)$(key).value=checked.inputs[key];calculate();return {summary:result.summary,operating:result.operating};}},{signal:lifecycle.signal})).catch(()=>{});}catch{}
+ window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
+}
+})();
+</script>
+</body>
+</html>
